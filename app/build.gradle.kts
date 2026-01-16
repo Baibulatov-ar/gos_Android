@@ -52,9 +52,17 @@ android {
     sourceSets {
         getByName("main") {
             java.srcDirs(
-                "build/generated/ksp/debug/java",
-                "build/generated/ksp/release/java"
+                "build/generated/ksp/debug/java"
             )
+        }
+    }
+    
+    // Fix KSP conflicts: ensure release tasks run after debug
+    afterEvaluate {
+        tasks.findByName("kspReleaseKotlin")?.let { releaseTask ->
+            tasks.findByName("kspDebugKotlin")?.let { debugTask ->
+                releaseTask.mustRunAfter(debugTask)
+            }
         }
     }
     
@@ -112,6 +120,22 @@ dependencies {
     
     // Testing
     testImplementation("junit:junit:4.13.2")
+    
+    // Mockito for mocking dependencies
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    
+    // Coroutines testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    
+    // Flow testing
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+    
+    // AndroidX Test
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    
+    // Android Testing
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
